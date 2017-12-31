@@ -52,8 +52,9 @@ class Store {
         return fs.writeFileSync(this.path, cipher.toString('utf8'));
     }
 
-    static checkKey(path, key) {
+    static checkKey(path, pwd) {
         if (fs.existsSync(path)) {
+            let key = Store._prepareKey(pwd);
             let ciphertext = fs.readFileSync(path).toString();
             let bytes = Store._decrypt(ciphertext, key);
             if (!bytes) {
