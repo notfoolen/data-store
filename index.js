@@ -13,7 +13,7 @@ class Store {
             path: 'store.json'
         };
 
-        let conf = Object.assign(opts, defaults);
+        Object.assign(defaults, opts);
         this.key = Store._prepareKey(opts.key);
         this.path = path.resolve(opts.path);
 

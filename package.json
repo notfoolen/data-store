@@ -1,6 +1,6 @@
 {
     "name": "encrypt-data-store",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "simple wrapper to store data",
     "main": "index.js",
     "scripts": {
