@@ -14,7 +14,7 @@ const Store = require(path.join(__dirname, 'index.js'));
 
 let store = new Store({
     path: 'store.json',
-    key: '123'
+    key: '444'
 });
 
 store.set('key', 'val');
@@ -25,6 +25,9 @@ store.onDidChange('col2', function(newValue, oldValue) {
 });
 
 store.set('col2', 'key3', 'val3');
+store.set('col2', 'key3', 'val3');
+store.set('col2', 'key4', 'val4');
+store.set('col2', 'key5', 'val5');
 
 
 let data = store.get('col2', 'key1');
@@ -32,3 +35,7 @@ let col = store.get('col2');
 
 console.log(data);
 console.log(col);
+
+// store.changeKey('123', '444', function() {
+//     console.log('change key succeeded');
+// });
