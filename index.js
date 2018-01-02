@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const EventEmitter = require('events');
+const assert = require('assert');
 const sha256 = require('js-sha256');
 var sodium = require('sodium-native');
 
@@ -14,11 +16,12 @@ class Store {
         };
 
         Object.assign(defaults, opts);
+        this.events = new EventEmitter();
         this.key = Store._prepareKey(opts.key);
         this.path = path.resolve(opts.path);
 
         if (fs.existsSync(this.path)) {
-            if (!Store.checkKey(this.path, this.key)) {
+            if (!Store.checkKey(this.path, opts.key)) {
                 throw new Error("Invalid encryption key for this file");
             }
         } else {
@@ -145,10 +148,27 @@ class Store {
 
         let cipher = Store._encrypt(JSON.stringify(data), this.key);
 
-        return fs.writeFileSync(this.path, cipher.toString('utf8'));
+        fs.writeFileSync(this.path, cipher.toString('utf8'));
+        this.events.emit('change');
     }
 
-    onDidChange(key, callback) {
+    onDidChange(p0, p1, p2) {
+        var col, key, callback;
+        if (p2) {
+            col = p0;
+            key = p1;
+            callback = p2;
+        } else {
+            key = p0;
+            callback = p1;
+        }
+
+        if (col) {
+            if (typeof col !== 'string') {
+                throw new TypeError(`Expected \`col\` to be of type \`string\`, got ${typeof col}`);
+            }
+        }
+
         if (typeof key !== 'string') {
             throw new TypeError(`Expected \`key\` to be of type \`string\`, got ${typeof key}`);
         }
@@ -157,11 +177,11 @@ class Store {
             throw new TypeError(`Expected \`callback\` to be of type \`function\`, got ${typeof callback}`);
         }
 
-        let currentValue = this.get(key);
+        let currentValue = col ? this.get(col, key) : this.get(key);
 
         const onChange = () => {
             const oldValue = currentValue;
-            const newValue = this.get(key);
+            const newValue = col ? this.get(col, key) : this.get(key);
 
             try {
                 assert.deepEqual(newValue, oldValue);

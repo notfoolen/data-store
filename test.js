@@ -12,17 +12,19 @@ const Store = require(path.join(__dirname, 'index.js'));
 // let answer = Store._decrypt(cipher, key);
 // console.log('answer', answer);
 
-let check = Store.checkKey('store.json', '1232');
-console.log(check);
-return;
-
 let store = new Store({
     path: 'store.json',
     key: '123'
 });
 
 store.set('key', 'val');
-store.set('col2', 'key1', 'val2');
+store.set('col2', 'key1', 'val1');
+
+store.onDidChange('col2', function(newValue, oldValue) {
+    console.log('onDidChange', 'col2', newValue, oldValue);
+});
+
+store.set('col2', 'key3', 'val3');
 
 
 let data = store.get('col2', 'key1');
